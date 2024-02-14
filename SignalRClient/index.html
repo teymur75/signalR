@@ -26,6 +26,13 @@
             }
 
             start();
+            function animate(){
+                state.fadeIn(1000,()=>{
+                    setTimeout(()=>{
+                        state.fadeOut(1000);
+                    },1000);
+                });
+            };
 
             const state=$('#state');
             connection.onreconnecting(error=>{
@@ -33,11 +40,7 @@
                 state.css('background-color','blue');
                 state.css('color','white');
                 state.html('Connection qurulur...');
-                state.fadeIn(1000,()=>{
-                    setTimeout(()=>{
-                        state.fadeOut(1000);
-                    },1000);
-                });
+                animate();
 
 
             });
@@ -45,21 +48,15 @@
                 state.css('background-color','green');
                 state.css('color','white');
                 state.html('Connection quruldu...');
-                state.fadeIn(1000,()=>{
-                    setTimeout(()=>{
-                        state.fadeOut(1000);
-                    },1000);
-                });
+                animate();
+
             });
             connection.onclose(connectionId=>{
                 state.css('background-color','red');
                 state.css('color','white');
                 state.html('Connection qurulabilmedi...');
-                state.fadeIn(1000,()=>{
-                    setTimeout(()=>{
-                        state.fadeOut(1000);
-                    },1000);
-                });
+                animate();
+
             })
 
 
@@ -72,6 +69,28 @@
                 $('#mesajlar').append(mesasage + '<br>');
             })
 
+            connection.on("userJoined",connectionId=>{
+                state.html(`${connectionId} servere qosuldu`);
+                state.css('background-color','green');
+                animate();
+
+            });
+
+            connection.on("userLeft",connectionId=>{
+                state.html(`${connectionId} serverden ayrildi`);
+                state.css('background-color','red');
+                animate();
+
+            });
+
+            connection.on("clients",clientData=>{
+                console.log(clientData);
+                let text="";
+                $.each(clientData,(item,index)=>{
+                    text+=`<li>${index}</li>`
+                })
+                $('#users').html(text);
+            })
 
             
 
@@ -86,5 +105,12 @@
     <button id="sendbtn" >Send</button>
 
     <div id="mesajlar"></div>
+
+
+    <div>
+        <ul id="users" >
+
+        </ul>
+    </div>
 </body>
 </html>
