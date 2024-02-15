@@ -12,7 +12,7 @@
             //AutomaticRecoonect -- movcud connection qoparsa yeniden baglayar
 
             const connection=new signalR.HubConnectionBuilder()
-            .withUrl("https://localhost:7065/testhub")
+            .withUrl("https://localhost:7065/messagehub")
             .withAutomaticReconnect([1000,1000,2000,2000,2000,2000])   //[1000,2000,3000]- default refreshtime vermek olur
             .build();
 
@@ -62,44 +62,51 @@
 
             $('#sendbtn').click(()=>{
                 let msg=$('#msg').val();
-                connection.invoke("SendMessageAsync",msg).catch(error=>console.log(error));
+                let connectionIds=$('#connectionIds').val().split(',');
+                connection.invoke("SendMessageAsync",msg,connectionIds).catch(error=>console.log(error));
             });
 
-            connection.on("ReceivedMessage",mesasage=>{
+            connection.on("receiveMessage",mesasage=>{
                 $('#mesajlar').append(mesasage + '<br>');
             })
 
-            connection.on("userJoined",connectionId=>{
-                state.html(`${connectionId} servere qosuldu`);
-                state.css('background-color','green');
-                animate();
+            // connection.on("userJoined",connectionId=>{
+            //     state.html(`${connectionId} servere qosuldu`);
+            //     state.css('background-color','green');
+            //     animate();
 
-            });
+            // });
 
-            connection.on("userLeft",connectionId=>{
-                state.html(`${connectionId} serverden ayrildi`);
-                state.css('background-color','red');
-                animate();
+            // connection.on("userLeft",connectionId=>{
+            //     state.html(`${connectionId} serverden ayrildi`);
+            //     state.css('background-color','red');
+            //     animate();
 
-            });
+            // });
 
-            connection.on("clients",clientData=>{
-                console.log(clientData);
-                let text="";
-                $.each(clientData,(item,index)=>{
-                    text+=`<li>${index}</li>`
-                })
-                $('#users').html(text);
+            // connection.on("clients",clientData=>{
+            //     console.log(clientData);
+            //     let text="";
+            //     $.each(clientData,(item,index)=>{
+            //         text+=`<li>${index}</li>`
+            //     })
+            //     $('#users').html(text);
+            // })
+
+            connection.on("getConnectionId",connectionId=>{
+                $('#getConnectionId').html(`Connection ID:${connectionId}`);
             })
-
             
 
         });
     </script>
 </head>
 <body>
+    <div style="background-color: black;color: white;" id="getConnectionId"></div>
 
     <div id="state" style="display: none;"></div>
+
+    <textarea  id="connectionIds" cols="30" rows="10"></textarea>
 
     <input type="text" id="msg" /><br>
     <button id="sendbtn" >Send</button>

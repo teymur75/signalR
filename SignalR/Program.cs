@@ -17,6 +17,7 @@ builder.Services.AddControllers();
 var app = builder.Build();
 app.UseCors();
 app.MapHub<TestHub>("/testhub");
+app.MapHub<MessageHub>("/messagehub");
 app.MapControllers();
 
 app.Run();
